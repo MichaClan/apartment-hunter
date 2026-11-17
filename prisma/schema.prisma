@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"   // switch to "mysql" for MariaDB later
+  url      = env("DATABASE_URL")
+}
+
+model Listing {
+  id               String   @id            // hash of source + source id
+  source           String
+  country          String
+  city             String
+  url              String
+  title            String
+  description      String
+  priceEurMonthly  Int?
+  billsIncluded    Boolean?
+  minLeaseMonths   Int?
+  furnished        Boolean?
+  photoUrls        String   // JSON-encoded string[]
+  contentHash      String
+  firstSeenAt      DateTime @default(now())
+  scores           Score[]
+
+  @@index([country])
+}
+
+model Score {
+  id                  Int      @id @default(autoincrement())
+  listingId           String
+  listing             Listing  @relation(fields: [listingId], references: [id])
+  promptVersion       String
+  model               String
+  score               Int
+  pros                String   // JSON
+  redFlags            String   // JSON
+  natureProximityNote String
+  summary             String
+  createdAt           DateTime @default(now())
+
+  @@unique([listingId, promptVersion, model])
+}

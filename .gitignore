@@ -1,0 +1,4 @@
+.env*.local
+prisma/*.db*
+
+/src/generated/prisma
